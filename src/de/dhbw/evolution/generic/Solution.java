@@ -1,4 +1,4 @@
-package de.dhbw.evolution.glue;
+package de.dhbw.evolution.generic;
 
 /**
  *

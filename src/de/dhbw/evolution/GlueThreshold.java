@@ -1,4 +1,7 @@
-package de.dhbw.evolution.glue;
+package de.dhbw.evolution;
+
+import de.dhbw.evolution.generic.Solution;
+import de.dhbw.evolution.generic.Vector;
 
 /**
  *
@@ -6,12 +9,12 @@ package de.dhbw.evolution.glue;
  * @author Matthias Welscher
  */
 public class GlueThreshold {
-	
+
 	static final int ATTEMPT_STEPS = 100;
 	static final int ITERATIONS = 100;
 	static final float INITIAL_THRESHOLD = 20f;
 	static final float THRESHOLD_DECAY = 0.995f;
-	
+
 	static final Vector INITIAL = new Vector(0.4, 0.2, 0.3);
 	static final Vector GOAL = new Vector(0.5, 0.8, 0.2);
 
@@ -19,17 +22,17 @@ public class GlueThreshold {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		
+
 		System.out.println("initial vector is X" + INITIAL);
 		System.out.println("goal vector is Z" + GOAL);
-		
+
 		Solution currentSolution = new Solution(INITIAL, getScore(makeGlue(INITIAL)));
 		Solution refSolution = currentSolution;
-		
+
 		System.out.println("starting threshold algorithm");
-		
+
 		float threshold = INITIAL_THRESHOLD;
-		
+
 		int j = 0;
 		boolean is_worse = true;
 		while (is_worse) {
@@ -56,12 +59,12 @@ public class GlueThreshold {
 
 			// decay threshold
 			threshold *= THRESHOLD_DECAY;
-			
+
 			if ((j % 100) == 0) {
 				System.out.println("X" + refSolution.getInputVector() + " -> Z" + makeGlue(refSolution.getInputVector()) + " -> " + makeGlue(refSolution.getInputVector()).getDistance(GOAL));
 			}
 			j++;
-			
+
 		}
 		System.out.println("threshold algorithm finished");
 		Vector glueVector = makeGlue(refSolution.getInputVector());
@@ -78,11 +81,11 @@ public class GlueThreshold {
 		double trel = x.getX();
 		double cb = x.getY();
 		double cx = x.getZ();
-		
+
 		double te = Math.pow(Math.E, -trel * 1.2d) + 0.2 * cx - 0.8 * Math.pow(cb, 2);
 		double fe = 1 + 0.5 * trel - 0.7 * Math.pow(cx, 3);
 		double vi = 1 - 0.3 * trel + 2.0 * cx;
-		
+
 		return new Vector(te, fe, vi);
 	}
 
@@ -108,5 +111,5 @@ public class GlueThreshold {
 		// since we are looking for the minimum distance, the score is negative distance
 		return -vector.getDistance(GOAL);
 	}
-	
+
 }
