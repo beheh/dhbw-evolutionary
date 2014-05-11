@@ -1,5 +1,6 @@
-package de.dhbw.evolution;
+package de.dhbw.evolution.genetic;
 
+import de.dhbw.evolution.generic.Glue;
 import de.dhbw.evolution.generic.Individual;
 import de.dhbw.evolution.generic.RouletteWheel;
 import de.dhbw.evolution.generic.Vector;
@@ -14,23 +15,30 @@ import java.util.List;
  * @author Benedict Etzel <developer@beheh.de>
  * @author Matthias Welscher
  */
-public class Genetic {
+public class GlueGenetic {
+
+	static final Vector GOAL = new Vector(0.5, 0.8, 0.2);
 
 	public static void main(String[] args) throws Exception {
 		List<Individual> currentGeneration = new ArrayList<>();
-		currentGeneration.add(new Individual(new Vector(0.9, 0.9)));
-		currentGeneration.add(new Individual(new Vector(0.5, 0.5)));
-		currentGeneration.add(new Individual(new Vector(0.25, 0.25)));
-		currentGeneration.add(new Individual(new Vector(0.0, 0.0)));
-		currentGeneration.add(new Individual(new Vector(0.25, 0.25)));
-		currentGeneration.add(new Individual(new Vector(-0.5, -0.5)));
-		currentGeneration.add(new Individual(new Vector(-0.9, -0.9)));
 		for(int i = 0; i < 1000; i++) {
-			currentGeneration.add(new Individual(new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1)));
+			currentGeneration.add(new Individual(new Vector(0.4, 0.2, 0.3)));
 		}
-		for(int i = 0; i < 100; i++) {
+		double bestDistance = -1;
+		for(int i = 0; bestDistance < 0 || bestDistance > 0.01; i++) {
 			score(currentGeneration); // calculdate fitness value
+			Iterator<Individual> individualIterator = currentGeneration.iterator();
+			Individual bestIndividual = null;
+			bestDistance = -1;
+			while(individualIterator.hasNext()) {
+				Individual individual = individualIterator.next();
+				if(bestDistance == -1 || individual.getResult() < bestDistance) {
+					bestDistance = individual.getResult();
+					bestIndividual = individual;
+				}
+			}
 			print(currentGeneration);
+			System.out.println("best individual is currently "+bestIndividual+" (glue is "+Glue.makeGlue(bestIndividual.getValues())+")");
 			currentGeneration = selection(currentGeneration);	// birth of new generation
 			mutate(currentGeneration, i); // mutate the new generation
 		}
@@ -43,7 +51,7 @@ public class Genetic {
 		});
 		System.out.println("Results are");
 		for(int i = 0; i < 3; i++) {
-			System.out.println("Rank " + (i + 1) + ": " + currentGeneration.get(i));
+			System.out.println("Rank " + (i + 1) + ": " + currentGeneration.get(i) + " (glue is " + Glue.makeGlue(currentGeneration.get(i).getValues()) + ")");
 		}
 	}
 
@@ -53,9 +61,7 @@ public class Genetic {
 		while(i.hasNext()) {
 			Individual individual = i.next();
 			Vector values = individual.getValues();
-			double x = values.getX();
-			double y = values.getY();
-			double result = (20 + x * x + y * y - 10 * (Math.cos(2 * Math.PI * x) + Math.cos(2 * Math.PI * y)));
+			double result = GOAL.getDistance(Glue.makeGlue(values));
 			if(result > highestResult) {
 				highestResult = result;
 			}
@@ -64,14 +70,7 @@ public class Genetic {
 		i = generation.iterator();
 		while(i.hasNext()) {
 			Individual individual = i.next();
-			Vector values = individual.getValues();
-			individual.setFitness(highestResult - individual.getResult());
-			// bad values are bad
-			if(Math.abs(values.getX()) > 1) {
-				individual.setFitness(0);
-			} else if(Math.abs(values.getY()) > 1) {
-				individual.setFitness(0);
-			}
+			individual.setFitness(Math.pow(highestResult - individual.getResult(), 3));
 		}
 	}
 
@@ -81,10 +80,13 @@ public class Genetic {
 			Individual individual = i.next();
 			Vector values = individual.getValues();
 			if(Math.random() > 0.5) {
-				values.setX(values.getX() + (2 * Math.random() - 1) / (generation + 1));
+				values.setX(values.getX() + (2 * Math.random() - 1) / Math.sqrt(generation + 1));
 			}
 			if(Math.random() > 0.5) {
-				values.setY(values.getY() + (2 * Math.random() - 1) / (generation + 1));
+				values.setY(values.getY() + (2 * Math.random() - 1) / Math.sqrt(generation + 1));
+			}
+			if(Math.random() > 0.5) {
+				values.setZ(values.getZ() + (2 * Math.random() - 1) / Math.sqrt(generation + 1));
 			}
 		}
 	}

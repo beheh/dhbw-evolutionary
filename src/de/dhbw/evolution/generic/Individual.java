@@ -52,9 +52,9 @@ public class Individual implements Cloneable {
 	public String toString() {
 		String line = "";
 		line += values.toString();
-		/*if(result != null) {
+		if(result != null) {
 			line += " = " + format.format(result);
-		}*/
+		}
 		if(fitness != null) {
 			line += " -> " + format.format(fitness);
 		}

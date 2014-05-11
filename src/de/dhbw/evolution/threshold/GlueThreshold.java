@@ -1,4 +1,4 @@
-package de.dhbw.evolution;
+package de.dhbw.evolution.threshold;
 
 import de.dhbw.evolution.generic.Solution;
 import de.dhbw.evolution.generic.Vector;

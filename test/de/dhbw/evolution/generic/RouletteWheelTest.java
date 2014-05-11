@@ -1,38 +1,14 @@
-
 package de.dhbw.evolution.generic;
 
 import java.util.Arrays;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author benedict
  */
 public class RouletteWheelTest {
-
-	public RouletteWheelTest() {
-	}
-
-	@BeforeClass
-	public static void setUpClass() {
-	}
-
-	@AfterClass
-	public static void tearDownClass() {
-	}
-
-	@Before
-	public void setUp() {
-	}
-
-	@After
-	public void tearDown() {
-	}
 
 	@Test
 	public void testRandomness() {
@@ -48,9 +24,8 @@ public class RouletteWheelTest {
 		for(int i = 0; i < 106; i++) {
 			results[wheel.spin()]++;
 		}
-		System.out.println("Expecting around [1, 5, 50, 50]: "+Arrays.toString(results));
+		System.out.println("Expecting around [1, 5, 50, 50]: " + Arrays.toString(results));
 	}
-
 
 	@Test
 	public void testEqual() {
@@ -66,6 +41,24 @@ public class RouletteWheelTest {
 		for(int i = 0; i < 100; i++) {
 			results[wheel.spin()]++;
 		}
-		System.out.println("Expecting around [25, 25, 25, 25]: "+Arrays.toString(results));
+		System.out.println("Expecting around [25, 25, 25, 25]: " + Arrays.toString(results));
+	}
+
+	@Test
+	public void testZero() {
+		RouletteWheel<Integer> wheel = new RouletteWheel<>();
+		wheel.add(0, 1);
+		wheel.add(1, 0);
+		int[] results = new int[2];
+		for(int i = 0; i < 2; i++) {
+			results[i] = 0;
+		}
+		for(int i = 0; i < 100; i++) {
+			results[wheel.spin()]++;
+		}
+
+		System.out.println("Expecting [100, 0]: " + Arrays.toString(results));
+		Assert.assertEquals(100, results[0]);
+		Assert.assertEquals(0, results[1]);
 	}
 }
